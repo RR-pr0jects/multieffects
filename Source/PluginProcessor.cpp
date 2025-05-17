@@ -144,6 +144,53 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    auto newDSPOrder = DSP_Order();
+
+    //trying to pull
+    while (dspOrderFifo.pull(newDSPOrder)) {
+
+    }
+
+        //if pulled, replace dsp order
+    if (newDSPOrder != DSP_Order()) 
+        DSP_Order = newDSPOrder;
+
+    //connverts dspOrder into an array of pointers
+    DSP_Pointers dspPointers;
+    
+    for (size_t i = 0; i < dspPointers.size(); ++i) {
+        switch (dspOrder[i])
+        {
+        case DSP_Options::Phase:
+            dspPointers[i] = &phaser;
+                break;
+        case DSP_Options::Chorus:
+            dspPointers[i] = &chorus;
+                break;
+        case DSP_Options::OverDrive:
+            dspPointers[i] = &overdrive;
+                break;
+        case DSP_Options::LadderFilter:
+            dspPointers[i] = &ladderFilter;
+                break;
+        case DSP_Options::END_OF_LIST:
+            jassertfalse
+                break;
+         
+        }
+
+        //processing(making a block and a context to be manipulated)
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto context juce::dsp::ProcessContextReplacing<float>(block);
+        for (size_t i = 0; i < dspPointers.size(); ++i) {
+            if (dspPointers[i] != nullptr) {
+                dspPointers[i]->process(context);
+             }
+        }
+
+    }
+
+
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     // Make sure to reset the state if your inner loop is processing
