@@ -129,6 +129,12 @@ bool MultieffectsAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 }
 #endif
 
+juce::AudioProcessorValueTreeState::ParameterLayout MultieffectsAudioProcessor::createParameterLayout() {
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    return layout;
+}
+
 void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -143,6 +149,19 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    //TODO
+    //add apvts-done
+    //update dsp here from audio params 
+    //save/load settings
+    // save/load dsp order
+    //drag to reorder gui
+    //gui design for each
+    //metering
+    //prepare all dsp
+    //stereo 
+    //video has more as bonuses, maybe later POST
+
 
     auto newDSPOrder = DSP_Order();
 
