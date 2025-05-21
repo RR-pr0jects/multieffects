@@ -83,7 +83,7 @@ public:
     juce::AudioParameterFloat* phaserFeedbackPercent = nullptr;
     juce::AudioParameterFloat* phaserMixPercent = nullptr;
 
-    juce::AudioParameterFloat* chorusRatehz = nullptr;
+    juce::AudioParameterFloat* chorusRateHz = nullptr;
     juce::AudioParameterFloat* chorusDepthPercent = nullptr;
     juce::AudioParameterFloat* chorusCenterDelayMs = nullptr;
     juce::AudioParameterFloat* chorusFeedbackPercent = nullptr;
