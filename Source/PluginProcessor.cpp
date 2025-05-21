@@ -34,14 +34,14 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
                        )
 #endif
 {
-    auto phaserParams = std::array{
+    auto floatParams = std::array{
         &phaserRateHz,
         &phaserCenterFreqHz,
         &phaserDepthPercent,
         &phaserFeedbackPercent,
         &phaserMixPercent
     };
-    auto phaserFuncs = std::array{
+    auto floatNameFuncs = std::array{
          &getPhaserRateName,
          &getPhaserCenterFreqName,
          &getPhaserDepthName,
@@ -49,9 +49,9 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
          &getPhaserMixName,
     };
 
-    for (size_t i = 0; i < phaserParams.size(); ++i) {
-        auto ptrtoParamPtr = phaserParams[i];
-       *ptrToParamPtr= dynamic_cast<juce::AudioParamterFloat*>(aptvs.getParameter(phaserFuncs[i]()));
+    for (size_t i = 0; i < floatParams.size(); ++i) {
+        auto ptrtoParamPtr = floatParams[i];
+       *ptrToParamPtr= dynamic_cast<juce::AudioParamterFloat*>(aptvs.getParameter(flaotNameFuncs[i]()));
 
        jassert(*ptrToParamPtr != nullptr);
     
