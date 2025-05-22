@@ -214,10 +214,29 @@ void MultieffectsAudioProcessor::changeProgramName (int index, const juce::Strin
 }
 
 //==============================================================================
-void MultieffectsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MultieffectsAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumInputChannels();
+
+    std::vector<juce::dsp::ProcessorBase*> dsp{
+        &phaser,
+        &chorus,
+        &overdrive,
+        &ladderFilter,
+        &generalFilter,
+    };
+     
+    for (auto p : dsp) {
+
+        p->prepare(spec);
+        p->reset();
+
+    }
+
+
 }
 
 void MultieffectsAudioProcessor::releaseResources()
@@ -488,7 +507,7 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //drag to reorder gui
     //gui design for each
     //metering
-    //prepare all dsp
+    //prepare all dsp--DONE
     //stereo 
     //video has more as bonuses, maybe later POST
 
