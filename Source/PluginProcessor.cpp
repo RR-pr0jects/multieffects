@@ -37,8 +37,22 @@ auto getLadderFilterChoices() {
         "HPF24", //highpass
         "BPF24", //bandpass
     };
-
 }
+
+auto getGeneralFilterChoices() {
+    return juce::StringArray{
+        "peak", 
+        "bandpass", 
+        "notch", 
+        "allpass",
+    };
+}
+
+auto getGeneralFilterModeName() { return juce::String("General Filter Mode"); }
+auto getGeneralFilterFreqName() { return juce::String("General Filter Freq Hz"); }
+auto getGeneralFilterQualityName() { return juce::String("Ladder Filter Quality"); }
+auto getGeneralFilterGainName() { return juce::String("Ladder Filter Gain"); }
+
 
 //==============================================================================
 MultieffectsAudioProcessor::MultieffectsAudioProcessor()
@@ -71,6 +85,11 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
         &ladderFilterCutoffHz,
         &ladderFilterResonance,
         &ladderFilterDrive,
+ 
+        &generalFilterFreqHz, 
+        &generalFilterQuality,
+        &generalFilterGain,
+
 
     };
     auto floatNameFuncs = std::array{
@@ -92,6 +111,10 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
          &getLadderFilterResonanceName,
          &getLadderFilterDriveName,
 
+         &getGeneralFilterFreqName,
+         &getGeneralFilterQualityName,
+         &getGeneralFilterGainName,
+
     };
 
     for (size_t i = 0; i < floatParams.size(); ++i) {
@@ -101,10 +124,28 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
        jassert(*ptrToParamPtr != nullptr);
     
     }
-    ladderFilterMode = dynamic_cast<juce::AudioParameterChoice*>(aptvs.getParameter(
-       getLadderFilterModeName() ));
-    jassert(ladderFilterMode != nullptr);
-}
+
+    auto choiceParams = std::array{
+
+        &ladderFilterMode,
+        &generalFilterMode,
+    };
+
+    auto choiceNameFuncs = std::array{
+        &getLadderFilterModeName,
+        &getGeneralFilterAModeName,
+
+    };
+
+    for (size_t i = 0; i < choiceParams.size(); ++i) {
+        auto ptrtoParamPtr = choiceParams[i];
+        *ptrToParamPtr = dynamic_cast<juce::AudioParamterChoice*>(aptvs.getParameter( choiceNameFuncs[i]()));
+
+        jassert(*ptrToParamPtr != nullptr);
+
+    }
+
+    
 
 MultieffectsAudioProcessor::~MultieffectsAudioProcessor()
 {
@@ -376,6 +417,49 @@ juce::AudioProcessorValueTreeState::ParameterLayout MultieffectsAudioProcessor::
         ""
     ));
 
+  /*  general filter
+    mode: peak bandpass, notch allpass
+    freq: 20hz -20000hzx in 1hz steps
+    q: 0.1-10 in 0.05 steps
+    gain: -24db to 24db in 0.5db increments
+    writing these in order below*/
+
+    name = getGeneralFilterModeName();
+    choices = getGeneralFilterChoices();
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{ name, versionHint },
+        name,
+        choices,
+        0
+    ));
+
+    name = getGeneralFilterFreqName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name, versionHint },
+        name,
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+        750.f,
+        "Hz"
+    ));
+
+    name = getGeneralFilterQualityName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name, versionHint },
+        name,
+        juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f),
+        1.f,
+        ""
+    ));
+
+    name = getGeneralFilterGainName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name, versionHint },
+        name,
+        juce::NormalisableRange<float>(-24.f, 24.f, 0.05f, 1.f),
+        0.f,
+        "dB"
+    ));
+    
 
     return layout;
 }
@@ -396,7 +480,8 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
 
     //TODO
-    //add apvts-done
+    //add apvts-DONE
+    // create all dsp choices-DONE
     //update dsp here from audio params 
     //save/load settings
     // save/load dsp order
@@ -437,6 +522,9 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         case DSP_Options::LadderFilter:
             dspPointers[i] = &ladderFilter;
                 break;
+        case DSP_Options::GeneralFilter:
+            dspPointers[i] = &generalFilter;
+            break;
         case DSP_Options::END_OF_LIST:
             jassertfalse
                 break;
