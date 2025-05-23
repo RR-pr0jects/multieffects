@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 
-#include <Fifo.h>
+#include <C:\Users\ricky\multieffects\SimpleMultiBandComp\Source\DSP\Fifo.h>
 
 //==============================================================================
 /**

@@ -15,7 +15,7 @@ auto getPhaserDepthName() { return juce::String("Phaser Depth %"); }
 auto getPhaserFeedbackName() { return juce::String("Phaser Feedback %"); }
 auto getPhaserMixName() { return juce::String("Phaser mix %"); }
 
-auto getChoursRateName() { return juce::String("Chorus Rate Hz"); }
+auto getChorusRateName() { return juce::String("Chorus Rate Hz"); }
 auto getChorusDepthName() { return juce::String("Chorus Depth %"); }
 auto getChorusCenterDelayName() { return juce::String("Chorus Center delay Ms"); }
 auto getChorusFeedbackName() { return juce::String("Chorus Feedback %"); }
@@ -24,7 +24,7 @@ auto getChorusMixName() { return juce::String("Chorus mix %"); }
 auto getOverdriveSaturationName() { return juce::String("Overdrive Saturation");}
 
 auto getLadderFilterModeName() { return juce::String("Ladder Filter Mode"); }
-auto getladderFilterCutoffName() { return juce::String("Ladder Filter Cutoff Hz"); }
+auto getLadderFilterCutoffName() { return juce::String("Ladder Filter Cutoff Hz"); }
 auto getLadderFilterResonanceName() { return juce::String("Ladder Filter Resonance"); }
 auto getLadderFilterDriveName() { return juce::String("Ladder Filter Drive"); }
 
@@ -57,14 +57,14 @@ auto getGeneralFilterGainName() { return juce::String("Ladder Filter Gain"); }
 //==============================================================================
 MultieffectsAudioProcessor::MultieffectsAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+    : AudioProcessor(BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+    )
 #endif
 {
     auto floatParams = std::array{
@@ -85,8 +85,8 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
         &ladderFilterCutoffHz,
         &ladderFilterResonance,
         &ladderFilterDrive,
- 
-        &generalFilterFreqHz, 
+
+        &generalFilterFreqHz,
         &generalFilterQuality,
         &generalFilterGain,
 
@@ -99,15 +99,15 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
          &getPhaserFeedbackName,
          &getPhaserMixName,
 
-         &getChoursRateName,
+         &getChorusRateName,
          &getChorusDepthName,
          &getChorusCenterDelayName,
          &getChorusFeedbackName,
          &getChorusMixName,
 
-         &getOverdriveSaturation,
+         &getOverdriveSaturationName,
 
-         &getladderFilterCutoffName,
+         &getLadderFilterCutoffName,
          &getLadderFilterResonanceName,
          &getLadderFilterDriveName,
 
@@ -118,11 +118,11 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
     };
 
     for (size_t i = 0; i < floatParams.size(); ++i) {
-        auto ptrtoParamPtr = floatParams[i];
-       *ptrToParamPtr= dynamic_cast<juce::AudioParamterFloat*>(aptvs.getParameter(floatNameFuncs[i]()));
+        auto ptrToParamPtr = floatParams[i];
+        *ptrToParamPtr = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(floatNameFuncs[i]()));
 
-       jassert(*ptrToParamPtr != nullptr);
-    
+        jassert(*ptrToParamPtr != nullptr);
+
     }
 
     auto choiceParams = std::array{
@@ -133,23 +133,23 @@ MultieffectsAudioProcessor::MultieffectsAudioProcessor()
 
     auto choiceNameFuncs = std::array{
         &getLadderFilterModeName,
-        &getGeneralFilterAModeName,
+        &getGeneralFilterModeName,
 
     };
 
     for (size_t i = 0; i < choiceParams.size(); ++i) {
-        auto ptrtoParamPtr = choiceParams[i];
-        *ptrToParamPtr = dynamic_cast<juce::AudioParamterChoice*>(aptvs.getParameter( choiceNameFuncs[i]()));
+        auto ptrToParamPtr = choiceParams[i];
+        *ptrToParamPtr = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(choiceNameFuncs[i]()));
 
         jassert(*ptrToParamPtr != nullptr);
 
     }
-
+}
     
 
-MultieffectsAudioProcessor::~MultieffectsAudioProcessor()
-{
-}
+    MultieffectsAudioProcessor::~MultieffectsAudioProcessor()
+    {
+    }
 
 //==============================================================================
 const juce::String MultieffectsAudioProcessor::getName() const
@@ -285,12 +285,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout MultieffectsAudioProcessor::
 
     const int versionHint = 1;
 
-    auto name = getPhaserRateName();//calls the function we made before
+    auto name = getPhaserRateName();
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{ name, versionHint },
-        name,                          //range freq in hertz(min,max,rate  of  change, skew factor
+        name,                         
         juce::NormalisableRange<float>(0.01f, 2.f, 0.01f, 1.f),
-        0.2f, //the default value
+        0.2f, 
         "Hz"
     ));
 
@@ -353,6 +353,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MultieffectsAudioProcessor::
         juce::NormalisableRange<float>(0.01f, 1.f, 0.01f, 1.f),
         0.05f,
         "%"
+    ));
 
     name = getChorusCenterDelayName();
     layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -417,8 +418,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout MultieffectsAudioProcessor::
        20000.f,
         "Hz"
     ));
-
-    name = getLadderFilterResonance();
+    
+    name = getLadderFilterResonanceName();
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{ name, versionHint },
         name,
@@ -521,7 +522,7 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
         //if pulled, replace dsp order
     if (newDSPOrder != DSP_Order()) 
-        DSP_Order = newDSPOrder;
+        dspOrder = newDSPOrder;
 
     //connverts dspOrder into an array of pointers
     DSP_Pointers dspPointers;
@@ -529,30 +530,31 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (size_t i = 0; i < dspPointers.size(); ++i) {
         switch (dspOrder[i])
         {
-        case DSP_Options::Phase:
+        case DSP_Option::Phase:
             dspPointers[i] = &phaser;
-                break;
-        case DSP_Options::Chorus:
+            break;
+        case DSP_Option::Chorus:
             dspPointers[i] = &chorus;
-                break;
-        case DSP_Options::OverDrive:
+            break;
+        case DSP_Option::Overdrive:
             dspPointers[i] = &overdrive;
-                break;
-        case DSP_Options::LadderFilter:
+            break;
+        case DSP_Option::LadderFilter:
             dspPointers[i] = &ladderFilter;
-                break;
-        case DSP_Options::GeneralFilter:
+            break;
+        case DSP_Option::GeneralFilter:
             dspPointers[i] = &generalFilter;
             break;
-        case DSP_Options::END_OF_LIST:
-            jassertfalse
+        case DSP_Option::END_OF_LIST:
+            jassertfalse;
                 break;
-         
+
         }
+    }
 
         //processing(making a block and a context to be manipulated)
         auto block = juce::dsp::AudioBlock<float>(buffer);
-        auto context juce::dsp::ProcessContextReplacing<float>(block);
+        auto context = juce::dsp::ProcessContextReplacing<float>(block);
         for (size_t i = 0; i < dspPointers.size(); ++i) {
             if (dspPointers[i] != nullptr) {
                 dspPointers[i]->process(context);
@@ -568,13 +570,13 @@ void MultieffectsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
-}
+//    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+//    {
+//        auto* channelData = buffer.getWritePointer (channel);
+//
+//        // ..do something to the data...
+//    }
+//}           FIX MAYBE
 
 //==============================================================================
 bool MultieffectsAudioProcessor::hasEditor() const
@@ -584,7 +586,7 @@ bool MultieffectsAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MultieffectsAudioProcessor::createEditor()
 {
-    return new MultieffectsAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor (*this);
 }
 
 //==============================================================================
@@ -593,12 +595,21 @@ void MultieffectsAudioProcessor::getStateInformation (juce::MemoryBlock& destDat
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    juce::MemoryOutputStream mos(destData, false);
+    apvts.state.writeToStream(mos);
+
 }
 
 void MultieffectsAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    auto tree= juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid()) {
+        apvts.replaceState(tree);
+    }
 }
 
 //==============================================================================

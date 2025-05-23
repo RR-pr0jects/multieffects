@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="KNlrFG" name="multieffects" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20"
+              pluginFormats="buildStandalone">
   <MAINGROUP id="nLBj3z" name="multieffects">
     <GROUP id="{B45C25F6-6B42-B38F-A4A2-A796FACECCF1}" name="Source">
       <GROUP id="{0944A4C2-B786-C342-C6CF-580F008BE956}" name="DSP">
